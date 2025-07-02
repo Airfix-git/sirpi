@@ -1,22 +1,83 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Redirecionando...</title>
-    <meta http-equiv="refresh" content="0; url=http://10.0.2.88:3000/" />
-    <script>
-      // Fallback JavaScript
-      window.location.href = "http://10.0.2.88:3000/";
-    </script>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        margin-top: 100px;
-      }
-    </style>
-  </head>
-  <body>
-    <h2>Redirecionando para o sistema interno...</h2>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <title>Entrando no sistema...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f4f4f4;
+    }
+
+    #start-button {
+      padding: 16px 32px;
+      font-size: 18px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #start-button:active {
+      transform: scale(0.97);
+    }
+  </style>
+</head>
+<body>
+  <div id="mobile-ui" style="display: none;">
+    <h2>Toque para iniciar o sistema</h2>
+    <button id="start-button">Iniciar em Tela Cheia</button>
+  </div>
+
+  <script>
+    const redirectUrl = "http://10.0.2.88:3000/";
+
+    function isMobileDevice() {
+      return /Mobi|Android|iPhone|iPad|iPod|Tablet/i.test(navigator.userAgent);
+    }
+
+    function enterFullscreen() {
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) return elem.requestFullscreen();
+      if (elem.webkitRequestFullscreen) return elem.webkitRequestFullscreen();
+      if (elem.msRequestFullscreen) return elem.msRequestFullscreen();
+      return Promise.reject("Fullscreen não suportado");
+    }
+
+    if (isMobileDevice()) {
+      // Exibe botão de iniciar no mobile
+      document.getElementById("mobile-ui").style.display = "block";
+
+      document.getElementById("start-button").addEventListener("click", () => {
+        enterFullscreen()
+          .then(() => {
+            setTimeout(() => {
+              window.location.href = redirectUrl;
+            }, 500);
+          })
+          .catch((err) => {
+            console.warn("Erro ao entrar em fullscreen:", err);
+            window.location.href = redirectUrl;
+          });
+      });
+
+      // Fallback: se o usuário não clicar em 15s, redireciona mesmo assim
+      setTimeout(() => {
+        window.location.href = redirectUrl;
+      }, 15000);
+
+    } else {
+      // Dispositivo não é mobile → redireciona direto
+      window.location.href = redirectUrl;
+    }
+  </script>
+</body>
 </html>
